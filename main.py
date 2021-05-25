@@ -8,9 +8,10 @@ from docx.shared import Cm
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_ALIGN_VERTICAL
 import datetime
+from docx.shared import Pt
 
 def generateEAN(file):
-    print("  "+file)
+    print("    "+file)
     generatePNG(file)
     document = Document("VZOR-EAN.docx")
 
@@ -24,7 +25,31 @@ def generateEAN(file):
             paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
             run.add_picture("cache/"+file+".png", width=Cm(4.74), height=Cm(2.41))
     #
-    document.save(file+".docx")
+    document.save(folder+"/"+file+".docx")
+
+def generateNames(file, text):
+    print("  "+file)
+    print("    "+text)
+    count = 2
+    for char in text:
+        if char.isdigit():
+            count = char
+            break
+
+    document = Document("VZOR-POPISEK.docx")
+
+    table = document.tables[0]
+
+    for sRow in table.rows:
+        for sCell in sRow.cells:
+            sCell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
+            paragraph = sCell.paragraphs[0]
+            run = paragraph.add_run()
+            run.bold = True
+            run.font.size = Pt(12)
+            run.text = text+"\n"+"kód "+file+"\n"+count+" x "+file
+    #
+    document.save(folder+"/POPISEK "+file+".docx")
 
 def generatePNG(number):
     # Generate barcode
@@ -64,7 +89,7 @@ if not (os.path.exists("cache")):
 print("Generuji data..")
 for row in rows:
     generateNames(row[0], row[2])
-    # generateEAN(row[1])
+    generateEAN(row[1])
 
 clearCache()
 print("  Hotovo!")
