@@ -2,15 +2,17 @@ import barcode
 import csv
 from barcode.writer import ImageWriter
 from PIL import Image
-import os, PIL, glob
+import os
 from docx import Document
 from docx.shared import Cm
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_ALIGN_VERTICAL
+import datetime
 
-def generateDocx(file):
+def generateEAN(file):
     print("  "+file)
-    document = Document("VZOR.docx")
+    generatePNG(file)
+    document = Document("VZOR-EAN.docx")
 
     table = document.tables[0]
 
@@ -38,6 +40,7 @@ def clearCache():
     print("\nMažu cache..")
     for filename in os.listdir("cache"):
         os.remove("cache/"+filename)
+    os.rmdir("cache")
 
 # Main
 fields = []
@@ -48,11 +51,20 @@ with open('togen.csv', 'r', encoding="UTF8") as csvfile:
     fields = next(csvreader)
     for row in csvreader:
         rows.append(row)
-print("Generuji EANY..")
 
+folder = datetime.datetime.now().strftime("%d.%m.%Y")
+if not (os.path.exists(folder)):
+    os.mkdir(folder)
+else:
+    for filename in os.listdir(folder):
+        os.remove(folder+"/"+filename)
+if not (os.path.exists("cache")):
+    os.mkdir("cache")
+
+print("Generuji data..")
 for row in rows:
-    generatePNG(row[1])
-    generateDocx(row[1])
+    generateNames(row[0], row[2])
+    # generateEAN(row[1])
 
 clearCache()
 print("  Hotovo!")
