@@ -27,14 +27,9 @@ def generateEAN(file):
     #
     document.save(folder+"/"+file+".docx")
 
-def generateNames(file, text):
+def generateNames(file, text, count):
     print("  "+file)
     print("    "+text)
-    count = 2
-    for char in text:
-        if char.isdigit():
-            count = char
-            break
 
     document = Document("VZOR-POPISEK.docx")
 
@@ -88,7 +83,7 @@ if not (os.path.exists("cache")):
 
 print("Generuji data..")
 for row in rows:
-    generateNames(row[0], row[2])
+    generateNames(row[0], row[2], row[3])
     generateEAN(row[1])
 
 clearCache()
