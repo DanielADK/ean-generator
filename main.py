@@ -10,6 +10,7 @@ from docx.enum.table import WD_ALIGN_VERTICAL
 import datetime
 from docx.shared import Pt
 
+
 def generateEAN(file):
     print("    "+file)
     generatePNG(file)
@@ -27,6 +28,7 @@ def generateEAN(file):
     #
     document.save(folder+"/"+file+".docx")
 
+
 def generateNames(file, text, count):
     print("  "+file)
     print("    "+text)
@@ -41,26 +43,30 @@ def generateNames(file, text, count):
             paragraph = sCell.paragraphs[0]
             run = paragraph.add_run()
             run.bold = True
-            run.font.size = Pt(12)
-            run.text = text+"\n"+"kód "+file+"\n"+count+" x "+file
+            run.font.size = Pt(11)
+            run.text = file+" "+text+"\n"+"kód "+file+"\nKs/kt"+count+" x "+file
     #
     document.save(folder+"/POPISEK "+file+".docx")
+
 
 def generatePNG(number):
     # Generate barcode
     ean = barcode.get('ean13', number, writer=ImageWriter())
 
-    filename = ean.save("cache/"+number, {"module_width":0.4,"module_height":13, "font_size": 20, "text_distance": 1, "quiet_zone": 2})
+    filename = ean.save("cache/"+number, {"module_width": 0.4, "module_height": 13, "font_size": 20, "text_distance": 1,
+                                          "quiet_zone": 2})
     # Resize
     image = Image.open(filename)
-    resized = image.resize((226,100))
+    resized = image.resize((226, 100))
     resized.save(filename)
+
 
 def clearCache():
     print("\nMažu cache..")
     for filename in os.listdir("cache"):
         os.remove("cache/"+filename)
     os.rmdir("cache")
+
 
 # Main
 fields = []
@@ -88,4 +94,3 @@ for row in rows:
 
 clearCache()
 print("  Hotovo!")
-
