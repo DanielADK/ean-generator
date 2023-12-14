@@ -30,14 +30,17 @@ def generateEAN(file):
     document.save(folder+"/"+file+".docx")
 
 
-def generateNames(file, text, count):
-    print("  "+file)
-    print("    "+text)
+def generateNames(espace_code, name, count):
+    print("  "+espace_code)
+    print("    "+name)
 
     document = Document("VZOR-POPISEK.docx")
 
     table = document.tables[0]
-    full_text = file + "\n " + text + "Ks/kt " + count + " x " + file
+    full_text = \
+f"""{espace_code} {name}
+kód {espace_code}
+ks/kt {count} x {espace_code}"""
     for sRow in table.rows:
         for sCell in sRow.cells:
             sCell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
@@ -47,7 +50,7 @@ def generateNames(file, text, count):
             run.font.size = Pt(11)
             run.text = full_text
     #
-    document.save(folder+"/POPISEK "+file+".docx")
+    document.save(folder+"/POPISEK "+espace_code+".docx")
 
 
 def generatePNG(number):
@@ -84,8 +87,9 @@ if __name__ == "__main__":
             row[3] = re.sub(r'[^0-9]', '', row[3])
             if row[0] != "" and row[1] != "" and row[2] != "" and row[3] != "":
                 rows.append(row)
-
-    folder = datetime.datetime.now().strftime("%02d.%02m.%04Y")
+    out_folder = "out"
+    folder = datetime.datetime.now().strftime("%04Y-%02m-%02d")
+    folder = "." + os.path.join(os.path.sep, out_folder, folder)
     if not (os.path.exists(folder)):
         os.mkdir(folder)
     else:
